@@ -18,18 +18,59 @@ app.get('/', function (request, response) {
   response.sendFile(__dirname+'/index.html');
 });
 
-app.post('/voice', (request, response) => {
+app.post('/entry', (request, response) => {
   const twiml = new VoiceResponse();
-  twiml.say('What is the title of your story?', { voice: 'alice' });
+  twiml.say('Are you the speaker or the listener', { voice: 'alice' });
   const gather = twiml.gather({
-    timeout: '5',
+    timeout: '10',
     speechTimeout: 'auto',
     input: 'speech',
-    action: '/getTitle'
+    action: '/getRole'
   });
   response.type('text/xml');
   response.send(twiml.toString());
 });
+
+app.post('/getRole', (request, response) => {
+  const twiml2 = new VoiceResponse();
+  response.type('text/xml');
+  const role = request.body.SpeechResult.toLowerCase();
+  console.log(role);
+  if (role == 'speaker') {
+  	var finalResponse = askForTitle(twiml2);
+    response.send(finalResponse.toString());
+  } else {
+  	const dial = twiml2.dial();
+  	dial.conference('Room 1234');
+  	response.send(twiml2.toString());
+  }
+});
+
+function askForTitle() {
+	const twiml = new VoiceResponse();
+	twiml.say('What is the title of your story?', { voice: 'alice' });
+	const gather = twiml.gather({
+    timeout: '10',
+    speechTimeout: 'auto',
+    input: 'speech',
+    action: '/getTitle'
+  });
+
+  return twiml
+}
+
+// app.post('/voice', (request, response) => {
+//   const twiml = new VoiceResponse();
+//   twiml.say('What is the title of your story?', { voice: 'alice' });
+//   const gather = twiml.gather({
+//     timeout: '5',
+//     speechTimeout: 'auto',
+//     input: 'speech',
+//     action: '/getTitle'
+//   });
+//   response.type('text/xml');
+//   response.send(twiml.toString());
+// });
 
 function repeatTitle(twiml) {
   twiml.say("Sorry, didn't quite catch that.", { voice: 'alice' });
@@ -47,6 +88,8 @@ app.post('/getTitle', (request, response) => {
     var finalResponse = repeatTitle(twiml);
     response.send(finalResponse.toString());
   }
+  const dial = twiml.dial();
+  dial.conference('Room 1234');
   twiml.say("Whenever you're ready, tell the story called "+storyTitle, { voice: 'alice' });
   var finalResponse = listenToStory(twiml, storyTitle);
   response.send(finalResponse.toString());
