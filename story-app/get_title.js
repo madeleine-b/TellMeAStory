@@ -47,53 +47,44 @@ app.post('/getTitle', (request, response) => {
     var finalResponse = repeatTitle(twiml);
     response.send(finalResponse.toString());
   }
-  response.redirect(307, '/listenToStory');
+  twiml.say("Whenever you're ready, tell the story called "+storyTitle, { voice: 'alice' });
+  var finalResponse = listenToStory(twiml, storyTitle);
+  response.send(finalResponse.toString());
 });
 
-/*function listenToStory(twiml, storyTitle){
+function listenToStory(twiml, storyTitle){
   console.log("we are here");
-  twiml.say("Whenever you're ready, tell the story called "+storyTitle, { voice: 'alice' });
-  processedSnippets += request.body.SpeechResult;
-  if (processedSnippets.length > 10) {
-    twiml.say("Goodbye", {voice: 'alice'});
-    twiml.hangup();
-    return twiml;
-  }
-  const gather = twiml.gather({
-    timeout: '5',
-    speechTimeout: 'auto',
-    input: 'speech'
-  // continue listening... 
-  });
-  return twiml;
-} */
-
-app.get('/listenToStory', (request, response) => {
-  const twiml = new VoiceResponse();
-  twiml.say("Whenever you're ready, tell the story called "+storyTitle, { voice: 'alice' });
   
-  function gather() {
-    const gatherNode = twiml.gather({
+  const gatherNode = twiml.gather({
       timeout: '10',
       speechTimeout: 'auto',
-      input: 'speech'
+      input: 'speech', 
+      action: '/continueListening'
+  });
+  
+  return twiml;
+} 
+
+app.post('/continueListening', (request, response) => {
+  const twiml2 = new VoiceResponse();
+
+  console.log(request.body.SpeechResult);
+  processedSnippets += request.body.SpeechResult;
+
+  const gatherNode = twiml2.gather({
+      timeout: '10',
+      speechTimeout: 'auto',
+      input: 'speech',
+      action: '/continueListening'
     });
 
-    twiml.redirect('/listenToStory');
+  if (processedSnippets.length < 10) {
+    twiml2.say("Goodbye", {voice: 'alice'});
+    twiml2.hangup();
   }
-
-  while (processedSnippets.length < 10) {
-    gather();
-    console.log(request.body.SpeechResult);
-    if (request.body.SpeechResult) {
-      processedSnippets += request.body.SpeechResult;
-    }
-  }
-  twiml.say("Goodbye", {voice: 'alice'});
-  twiml.hangup();
     
   response.type('text/xml');
-  response.send(twiml.toString());
+  response.send(twiml2.toString());
 }); 
 
 app.listen(3000, function() {
