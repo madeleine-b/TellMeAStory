@@ -11,13 +11,71 @@ var textTemplate = $("#text-template").html();
 var imageTemplate = $("#image-template").html();
 var endTemplate = $("#end-template").html();
 
+/* ----------------------- Flickity -------------------------*/
+
+var bookOptions = {
+	"The Three Little Pigs": "images/the_three_little_pigs.jpg", 
+	"The Cat in the Hat": "images/the_cat_in_the_hat.jpg", 
+	"Charlotte's Web": "images/charlottes_web.jpg", 
+	"Tell Your Own Story": "images/tell_your_own_story.jpg"
+}
+
+for (var name in bookOptions) {
+	var carouselCell = document.createElement("div");
+	carouselCell.class = "carousel-cell";
+	carouselCell.name = name;
+	if (name == "Tell Your Own Story") {
+		carouselCell.onclick = function() {
+			chooseBook(this.name);
+		};
+	}
+
+	var bookCover = document.createElement("img");
+	bookCover.class = "carousel-cell-image";
+	bookCover.alt = name;
+	bookCover.width = 400;
+	bookCover.height = 600;
+	bookCover.src = bookOptions[name];
+	carouselCell.appendChild(bookCover);
+
+	$("#flickity-carousel").append(carouselCell);
+}
+
+var flkty = new Flickity( '#flickity-carousel', {
+	imagesLoaded: true,
+	wrapAround: true,
+	setGallerySize: false
+});
+
+
+$("#book").hide();
+$("#cat-hat-book").hide();
+$("#pigs-book").hide();
+$("#charlottes-book").hide();
+
+function chooseBook(name) {
+	$("#flickity-carousel").hide();
+	$("#book").hide();
+	$("#cat-hat-book").hide();
+	$("#pigs-book").hide();
+	$("#charlottes-book").hide();
+
+	if (name == "Tell Your Own Story") {
+		$("#book").show();
+	} else if (name == "The Three Little Pigs") {
+		$("#pigs-book").show();
+	} else if (name == "Charlotte's Web") {
+		$("#charlottes-book").show();
+	} else {
+		$("#cat-hat-book").show();
+	}
+}
+
 /* ----------------------- Sizing -------------------------*/
 
 // Calculate booklet size.
 var w = $(window).width();
-var h = $(window).height()/3;
-console.log("window width: " + w);
-console.log("window height: " + h);
+var h = window.innerHeight;
 
 var BOOK_SIZE = 0.8; 
 var ASPECT_RATIO = 3/2;
@@ -28,6 +86,9 @@ if (bookHeight > h * BOOK_SIZE) {
 	bookHeight = h * BOOK_SIZE;
 	bookWidth = bookHeight / ASPECT_RATIO;
 }
+
+// Set up padding on booklet.
+$("#title-cover").css("padding-top", (bookHeight/4)+"px");
 
 /* ----------------------- Booklet -------------------------*/
 
@@ -41,7 +102,37 @@ $(function() {
         pageNumbers: true,
         closed: true,
         covers: true,
-        keyboard: true
+        keyboard: false
+	});
+
+	$('#pigs-book').booklet({
+		width: bookWidth * 2, 
+		height: bookHeight,
+        pagePadding: 0,
+        pageNumbers: true,
+        closed: true,
+        covers: true,
+        keyboard: false
+	});
+
+	$('#charlottes-book').booklet({
+		width: bookWidth * 2, 
+		height: bookHeight,
+        pagePadding: 0,
+        pageNumbers: true,
+        closed: true,
+        covers: true,
+        keyboard: false
+	});
+
+	$('#cat-hat-book').booklet({
+		width: bookWidth * 2, 
+		height: bookHeight,
+        pagePadding: 0,
+        pageNumbers: true,
+        closed: true,
+        covers: true,
+        keyboard: false
 	});
 });
 
@@ -70,45 +161,62 @@ function addBlankPages() {
  	numPages++;
 }
 
-var PAGE_CHAR_LIMIT = 100;
+var PAGE_WORD_LIMIT = 80;
+var WORD_SPEED = 200;
+var startedStory = false;
+var storyQueue = [];
 
-function addMoreText(text) {
-	data.text += text + " ";
-
-	if (data.text.length > PAGE_CHAR_LIMIT) { 
-		// create new page, flip to it, add to it
-		addBlankPages();
-		$("#book").booklet("next");
-		currentPage += 2;
-		data.text = text + " ";
+function flipPage(direction) {
+	if (direction != "next" && direction != "prev") {
+		alert(direction + " is not a valid direction to flip page towards.");
 	}
 
-   	$("#page-" + currentPage).html(Mustache.render(textTemplate, data)); 
-
-   	return data.text.length;
+	$("#book").booklet(direction);	
 }
 
-var startedStory = false;
+function pageOverflowing(text) {
+	var words = text.split(" ");
+	return words.length > PAGE_WORD_LIMIT;
+}
 
-function tellStory(text) {
-	if (text.length > PAGE_CHAR_LIMIT) {
-		assert("Yo, that's way to long of a snippet: " + text);
+function addOneWord(word) {
+	data.text += word + " ";
+
+	// just started story (flip to first page)
+	if (!startedStory) {
+		flipPage("next");
+		data.text = word + " ";
+		startedStory = true;
+	} 
+	
+	// current page overflowing, create new page
+	else if (pageOverflowing(data.text)) { 
+		addBlankPages();
+		currentPage += 2;
+		flipPage("next");
+		data.text = word + " ";
 	}
 
+   	$("#page-" + currentPage).html(Mustache.render(textTemplate, data));
+}
+
+function addWords() {
+	if (storyQueue.length != 0) {
+		var word = storyQueue.shift();
+		addOneWord(word);
+	}
+}
+
+setInterval(addWords, WORD_SPEED);
+
+function tellStory(text) {
 	if (text.toLowerCase() == "the end") {
 		endStory();
 		return;
 	}
 
-	if (!startedStory) {
-		// Open up the book, start adding text to first page.
-		$("#book").booklet("next");
-		data.text = text + " ";		
-   		$("#page-" + currentPage).html(Mustache.render(textTemplate, data));
-   		startedStory = true;
-	} else {
-		return addMoreText(text);
-	}
+	var words = text.split(" ");
+	storyQueue = storyQueue.concat(words);
 }
 
 function tellTitle(title) {
@@ -121,7 +229,11 @@ function tellTitle(title) {
 }
 
 function endStory() {
-	$("#book").booklet("next");
+	flipPage("next");
+
+	// allow flipping of pages using keyboard left & right arrow keys
+	$("#book").booklet("option", "keyboard", true);
+	$("#book").booklet("option", "arrows", true);
 }
 
 /* ----------------------- Requesting data -------------------------*/
@@ -141,4 +253,4 @@ function addText() {
     	})
 }
 
-setInterval(addText, 2000);
+// setInterval(addText, 2000);

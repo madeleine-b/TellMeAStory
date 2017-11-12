@@ -17,19 +17,31 @@ body {
 	background-size: 100%;
 }
 
-#title-cover, #end-cover {
+#title-cover {
 	text-align: center;
 	vertical-align: middle;
 	color: #d2aa5a;
 	font-family: "IM Fell English", Georgia, sans-serif;
 	height: 100%;
+	padding: 30px;
+}
+
+#end-cover {
+	color: #d2aa5a;
+	font-family: "IM Fell English", Georgia, sans-serif;
+	height: 100%;
+	display: flex;
+	justify-content:center;
+	align-items:center;
 }
 
 .text-page {
 	font-family: "Garamond", Georgia, Serif;
-	font-size: 200%;
+	font-size: 175%;
 	color: #663300;
 	height: 100%;
+	padding-right: 40px;
+	padding-left: 40px;
 }
 
 .image-page {
@@ -39,3 +51,30 @@ body {
 	align-items: center;
 }
 
+#empty-filler {
+	height: 10vh;
+}
+
+/* Flickity */
+.carousel {
+	padding-top: 2%;
+	height: 600px;
+	width: 90%;
+	padding-left: 5%;
+}
+
+.carousel-cell {
+  width: 66%;
+  height: 100%; /*400px;*/
+  margin-right: 10px;
+}
+
+.carousel-cell-image {
+  display: block;
+  max-height: 100%;
+  margin: 0 auto;
+  max-width: 100%;
+  opacity: 0;
+  -webkit-transition: opacity 0.4s;
+          transition: opacity 0.4s;
+}
