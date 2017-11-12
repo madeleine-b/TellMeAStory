@@ -75,7 +75,14 @@ function addTextToPage(text) {
 
 /* ----------------------- Requesting data -------------------------*/
 
-function addText(moreText) {
-	console.log(moreText);
+function addText() {
+	$.ajax({
+		'url' : 'http://c0cce248.ngrok.io/nextSnippet',
+    	'type' : 'GET'}).then(data => {
+    		console.log("get succesful");
+    		console.log(data);
+    		$('#title-cover').html(Mustache.render(titleTemplate, data));
+    	})
 }
 
+addText();
