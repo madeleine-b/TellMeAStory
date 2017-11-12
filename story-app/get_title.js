@@ -14,7 +14,7 @@ app.use((request, response, next) => {
 
 var storyTitle = "Story Title";
 var processedSnippets = [];
-var snippetQueue = ["a", "b", "c"];
+var snippetQueue = [];
 
 app.get('/', function (request, response) {
 	response.sendFile(__dirname+'/index.html');
@@ -38,14 +38,19 @@ app.post('/getRole', (request, response) => {
   response.type('text/xml');
   const role = request.body.SpeechResult.toLowerCase();
   console.log(role);
-  if (role == 'speaker') {
+  // until we have the ability to gather from a conference call, everyone who calls
+  // will be the speaker telling the story
+  var finalResponse = askForTitle(twiml2);
+  response.send(finalResponse.toString());
+
+  /*if (role == 'speaker') {
   	var finalResponse = askForTitle(twiml2);
     response.send(finalResponse.toString());
   } else {
   	const dial = twiml2.dial();
   	dial.conference('Room 1234');
   	response.send(twiml2.toString());
-  }
+  } */
 });
 
 function askForTitle() {
@@ -63,38 +68,17 @@ function askForTitle() {
   return twiml;
 }
 
-// app.post('/voice', (request, response) => {
-//   const twiml = new VoiceResponse();
-//   twiml.say('What is the title of your story?', { voice: 'alice' });
-//   const gather = twiml.gather({
-//     timeout: '5',
-//     speechTimeout: 'auto',
-//     input: 'speech',
-//     action: '/getTitle'
-//   });
-//   response.type('text/xml');
-//   response.send(twiml.toString());
-// });
-
-/*function repeatTitle(twiml) {
-  twiml.say("Sorry, didn't quite catch that.", { voice: 'alice' });
-  twiml.redirect(307, '/voice');
-  return twiml;
-} */
-
 app.post('/getTitle', (request, response) => {
   const twiml = new VoiceResponse();
   response.type('text/xml');
   storyTitle = request.body.SpeechResult;
   var confidence = request.body.Confidence;
   console.log('Heard the title as: ' + storyTitle + " (with confidence " + confidence.toString() + ")");
-  if (confidence < 0.70) { // still need to test this branch 
+  if (confidence < 0.50) { // THIS BRANCH DOESN'T WORK
     const twiml_temp = new VoiceResponse();
     twiml_temp.say("Sorry, didn't quite catch that.", { voice: 'alice' });
     twiml.redirect(307, '/getTitle');
   }
-  const dial = twiml.dial();
-  dial.conference('Room 1234');
   twiml.say("Whenever you're ready, tell the story called "+storyTitle, { voice: 'alice' });
   var finalResponse = listenToStory(twiml, storyTitle);
   response.send(finalResponse.toString());
@@ -104,12 +88,13 @@ app.get('/nextSnippet', (request, response) => {
 	var snippetToSend = snippetQueue[0] ? snippetQueue[0] : '';
 	var jsonSnippets = JSON.stringify({'title' : storyTitle, 'text' : snippetToSend});
 	snippetQueue.splice(0, 1);  // remove first element
-	console.log(snippetQueue);
 	response.setHeader('Content-Type', 'application/json');
 	response.send(jsonSnippets);
 });
 
 function listenToStory(twiml, storyTitle){
+	/*var dial = twiml.dial();
+  	dial.conference('Room 1234'); */
 	console.log("Beginning to listen to the story");  
 	const gatherNode = twiml.gather({
 			timeout: '10',
