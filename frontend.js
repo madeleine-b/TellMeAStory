@@ -15,7 +15,9 @@ var endTemplate = $("#end-template").html();
 
 // Calculate booklet size.
 var w = $(window).width();
-var h = $(window).height();
+var h = $(window).height()/4;
+console.log("window width: " + w);
+console.log("window height: " + h);
 
 var BOOK_SIZE = 0.8; 
 var ASPECT_RATIO = 3/2;
@@ -68,9 +70,22 @@ function addBlankPages() {
  	numPages++;
 }
 
+var PAGE_CHAR_LIMIT = 100;
+
 function addTextToPage(text) {
 	data.text += text;
-    $("#page-" + currentPage).html(Mustache.render(textTemplate, data)); 
+
+	if (data.text.length > PAGE_CHAR_LIMIT) { 
+		// create new page, flip to it, add to it
+		addBlankPages();
+		$("#book").booklet("next");
+		currentPage += 2;
+		data.text = text;
+	}
+
+   	$("#page-" + currentPage).html(Mustache.render(textTemplate, data)); 
+
+   	return data.text.length;
 }
 
 /* ----------------------- Requesting data -------------------------*/
@@ -85,4 +100,4 @@ function addText() {
     	})
 }
 
-addText();
+//addText();
