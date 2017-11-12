@@ -95,6 +95,11 @@ function tellStory(text) {
 		assert("Yo, that's way to long of a snippet: " + text);
 	}
 
+	if (text.toLowerCase() == "the end") {
+		endStory();
+		return;
+	}
+
 	if (!startedStory) {
 		// Open up the book, start adding text to first page.
 		$("#book").booklet("next");
@@ -113,6 +118,10 @@ function tellTitle(title) {
 
 	data.title = title;
     $('#title-cover').html(Mustache.render(titleTemplate, data));
+}
+
+function endStory() {
+	$("#book").booklet("next");
 }
 
 /* ----------------------- Requesting data -------------------------*/
