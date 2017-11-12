@@ -41,15 +41,37 @@ $(function() {
         covers: true,
         keyboard: true
 	});
-
-	$('#mybook').booklet("enable");
 });
 
 // Updating title cover, pages, and end cover.
 $("#title-cover").html(Mustache.render(titleTemplate, data));
-$('#page-1').html(Mustache.render(textTemplate, data));
-$('#page-2').html(Mustache.render(imageTemplate, data))
+$('#page-2').html(Mustache.render(textTemplate, data));
+$('#page-3').html(Mustache.render(imageTemplate, data));
 $("#end-cover").html(Mustache.render(endTemplate, data));
+
+var currentPage = 2;
+var numPages = 4;
+
+function addBlankPages() {
+ 	var textPage = document.createElement("div");
+ 	textPage.class = "text-page";
+ 	textPage.id = "page-" + numPages;
+    $('#book').booklet("add", numPages, '<div class="text-page" id="' + textPage.id + '"></div>');
+    $("#page-" + numPages).html(Mustache.render(textTemplate, data)); 
+ 	numPages++;
+
+ 	var imagePage = document.createElement("div");
+ 	imagePage.class = "image-page";
+ 	imagePage.id = "page-" + numPages;
+    $('#book').booklet("add", numPages, '<div class="image-page" id="' + imagePage.id + '"></div>');
+    $("#page-" + numPages).html(Mustache.render(imageTemplate, data));
+ 	numPages++;
+}
+
+function addTextToPage(text) {
+	data.text += text;
+    $("#page-" + currentPage).html(Mustache.render(textTemplate, data)); 
+}
 
 /* ----------------------- Requesting data -------------------------*/
 
