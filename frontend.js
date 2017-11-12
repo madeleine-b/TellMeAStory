@@ -2,8 +2,8 @@
 
 // Data to fill Mustache template.
 var data = {
-  title: "The Three Little Pigs",
-  text: "Once upon a time"
+  title: "",
+  text: ""
 };
 
 var titleTemplate = $("#title-template").html();
@@ -93,11 +93,15 @@ function addTextToPage(text) {
 function addText() {
 	$.ajax({
 		'url' : 'http://c0cce248.ngrok.io/nextSnippet',
-    	'type' : 'GET'}).then(data => {
+    	'type' : 'GET'}).then(result => {
+    		if (data.title == '' && result.title != '') {
+    			data.title = result.title;
+    			$('#title-cover').html(Mustache.render(titleTemplate, data));
+    		}
+    		addTextToPage(result.text);
     		console.log("get succesful");
     		console.log(data);
-    		$('#title-cover').html(Mustache.render(titleTemplate, data));
     	})
 }
 
-//addText();
+setInterval(addText, 3000);
