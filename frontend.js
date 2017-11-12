@@ -15,7 +15,9 @@ var endTemplate = $("#end-template").html();
 
 // Calculate booklet size.
 var w = $(window).width();
-var h = $(window).height();
+var h = $(window).height()/4;
+console.log("window width: " + w);
+console.log("window height: " + h);
 
 var BOOK_SIZE = 0.8; 
 var ASPECT_RATIO = 3/2;
@@ -41,19 +43,61 @@ $(function() {
         covers: true,
         keyboard: true
 	});
-
-	$('#mybook').booklet("enable");
 });
 
 // Updating title cover, pages, and end cover.
 $("#title-cover").html(Mustache.render(titleTemplate, data));
-$('#page-1').html(Mustache.render(textTemplate, data));
-$('#page-2').html(Mustache.render(imageTemplate, data))
+$('#page-2').html(Mustache.render(textTemplate, data));
+$('#page-3').html(Mustache.render(imageTemplate, data));
 $("#end-cover").html(Mustache.render(endTemplate, data));
+
+var currentPage = 2;
+var numPages = 4;
+
+function addBlankPages() {
+ 	var textPage = document.createElement("div");
+ 	textPage.class = "text-page";
+ 	textPage.id = "page-" + numPages;
+    $('#book').booklet("add", numPages, '<div class="text-page" id="' + textPage.id + '"></div>');
+    $("#page-" + numPages).html(Mustache.render(textTemplate, data)); 
+ 	numPages++;
+
+ 	var imagePage = document.createElement("div");
+ 	imagePage.class = "image-page";
+ 	imagePage.id = "page-" + numPages;
+    $('#book').booklet("add", numPages, '<div class="image-page" id="' + imagePage.id + '"></div>');
+    $("#page-" + numPages).html(Mustache.render(imageTemplate, data));
+ 	numPages++;
+}
+
+var PAGE_CHAR_LIMIT = 100;
+
+function addTextToPage(text) {
+	data.text += text;
+
+	if (data.text.length > PAGE_CHAR_LIMIT) { 
+		// create new page, flip to it, add to it
+		addBlankPages();
+		$("#book").booklet("next");
+		currentPage += 2;
+		data.text = text;
+	}
+
+   	$("#page-" + currentPage).html(Mustache.render(textTemplate, data)); 
+
+   	return data.text.length;
+}
 
 /* ----------------------- Requesting data -------------------------*/
 
-function addText(moreText) {
-	console.log(moreText);
+function addText() {
+	$.ajax({
+		'url' : 'http://c0cce248.ngrok.io/nextSnippet',
+    	'type' : 'GET'}).then(data => {
+    		console.log("get succesful");
+    		console.log(data);
+    		$('#title-cover').html(Mustache.render(titleTemplate, data));
+    	})
 }
 
+//addText();
