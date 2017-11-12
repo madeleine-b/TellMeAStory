@@ -2,7 +2,7 @@
 
 // Data to fill Mustache template.
 var data = {
-  title: "The Three Little Pigs",
+  title: "",
   text: ""
 };
 
@@ -104,6 +104,15 @@ function tellStory(text) {
 	} else {
 		return addMoreText(text);
 	}
+}
+
+function tellTitle(title) {
+	if (startedStory) {
+		assert("Yo, you already told us the title: " + data.title);
+	}
+
+	data.title = title;
+    $('#title-cover').html(Mustache.render(titleTemplate, data));
 }
 
 /* ----------------------- Requesting data -------------------------*/
