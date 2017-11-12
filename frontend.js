@@ -3,7 +3,7 @@
 // Data to fill Mustache template.
 var data = {
   title: "The Three Little Pigs",
-  text: "Once upon a time"
+  text: ""
 };
 
 var titleTemplate = $("#title-template").html();
@@ -72,7 +72,7 @@ function addBlankPages() {
 
 var PAGE_CHAR_LIMIT = 100;
 
-function addTextToPage(text) {
+function addMoreText(text) {
 	data.text += text;
 
 	if (data.text.length > PAGE_CHAR_LIMIT) { 
@@ -86,6 +86,24 @@ function addTextToPage(text) {
    	$("#page-" + currentPage).html(Mustache.render(textTemplate, data)); 
 
    	return data.text.length;
+}
+
+var startedStory = false;
+
+function tellStory(text) {
+	if (text.length > PAGE_CHAR_LIMIT) {
+		assert("Yo, that's way to long of a snippet: " + text);
+	}
+
+	if (!startedStory) {
+		// Open up the book, start adding text to first page.
+		$("#book").booklet("next");
+		data.text = text;		
+   		$("#page-" + currentPage).html(Mustache.render(textTemplate, data));
+   		startedStory = true;
+	} else {
+		return addMoreText(text);
+	}
 }
 
 /* ----------------------- Requesting data -------------------------*/
