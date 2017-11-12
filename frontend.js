@@ -15,7 +15,7 @@ var endTemplate = $("#end-template").html();
 
 // Calculate booklet size.
 var w = $(window).width();
-var h = $(window).height()/4;
+var h = $(window).height()/3;
 console.log("window width: " + w);
 console.log("window height: " + h);
 
@@ -129,11 +129,16 @@ function endStory() {
 function addText() {
 	$.ajax({
 		'url' : 'http://66f70844.ngrok.io/nextSnippet', //'http://c0cce248.ngrok.io/nextSnippet',
-    	'type' : 'GET'}).then(data => {
+    	'type' : 'GET'}).then(result => {
+    		if (!startedStory && result.title != '') {
+    			tellTitle(result.title);
+    		}
+    		if (result.text != '') {
+    			tellStory(result.text);
+    		}
     		console.log("get succesful");
-    		console.log(data);
-    		$('#title-cover').html(Mustache.render(titleTemplate, data));
+    		console.log(result.text);
     	})
 }
 
-//addText();
+setInterval(addText, 2000);
