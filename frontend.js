@@ -73,14 +73,14 @@ function addBlankPages() {
 var PAGE_CHAR_LIMIT = 100;
 
 function addMoreText(text) {
-	data.text += text;
+	data.text += text + " ";
 
 	if (data.text.length > PAGE_CHAR_LIMIT) { 
 		// create new page, flip to it, add to it
 		addBlankPages();
 		$("#book").booklet("next");
 		currentPage += 2;
-		data.text = text;
+		data.text = text + " ";
 	}
 
    	$("#page-" + currentPage).html(Mustache.render(textTemplate, data)); 
@@ -98,7 +98,7 @@ function tellStory(text) {
 	if (!startedStory) {
 		// Open up the book, start adding text to first page.
 		$("#book").booklet("next");
-		data.text = text;		
+		data.text = text + " ";		
    		$("#page-" + currentPage).html(Mustache.render(textTemplate, data));
    		startedStory = true;
 	} else {
