@@ -26,9 +26,16 @@ body {
 	/*line-height: 90px; */
 }
 
-.page {
-
+.text-page {
 	font-family: "Garamond", Georgia, Serif;
 	font-size: 200%;
 	color: #663300;
+	height: 100%;
+}
+
+.image-page {
+	display: table-cell; 
+	vertical-align: middle; 
+	text-align: center
+	height: 100%;
 }

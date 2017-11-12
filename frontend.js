@@ -50,3 +50,10 @@ $("#title-cover").html(Mustache.render(titleTemplate, data));
 $('#page-1').html(Mustache.render(textTemplate, data));
 $('#page-2').html(Mustache.render(imageTemplate, data))
 $("#end-cover").html(Mustache.render(endTemplate, data));
+
+/* ----------------------- Requesting data -------------------------*/
+
+function addText(moreText) {
+	console.log(moreText);
+}
+
