@@ -253,4 +253,4 @@ function addText() {
     	})
 }
 
-// setInterval(addText, 2000);
+setInterval(addText, 2000);
