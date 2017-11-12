@@ -23,7 +23,6 @@ body {
 	color: #d2aa5a;
 	font-family: "IM Fell English", Georgia, sans-serif;
 	height: 100%;
-	/*line-height: 90px; */
 }
 
 .text-page {
@@ -34,9 +33,6 @@ body {
 }
 
 .image-page {
-	/*vertical-align: middle; 
-	text-align: center;
-	margin: auto;*/
 	height: 100%;
 	display: flex;
 	justify-content: center;

@@ -128,7 +128,7 @@ function endStory() {
 
 function addText() {
 	$.ajax({
-		'url' : 'http://66f70844.ngrok.io/nextSnippet', //'http://c0cce248.ngrok.io/nextSnippet',
+		'url' : 'http://66570844.ngrok.io/nextSnippet', 
     	'type' : 'GET'}).then(result => {
     		if (!startedStory && result.title != '') {
     			tellTitle(result.title);
