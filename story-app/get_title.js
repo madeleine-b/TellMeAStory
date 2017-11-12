@@ -12,7 +12,7 @@ app.use((request, response, next) => {
 	next();
 });  
 
-var storyTitle = "Story Title";
+var storyTitle = '';
 var processedSnippets = [];
 var snippetQueue = [];
 
@@ -107,13 +107,15 @@ function listenToStory(twiml, storyTitle){
 
 app.post('/continueListening', (request, response) => {
 	const twiml2 = new VoiceResponse();
-
-	console.log("Story snippet: " + request.body.SpeechResult);
-	processedSnippets.push(request.body.SpeechResult);
-	snippetQueue.push(request.body.SpeechResult);
-
-	if (processedSnippets.length > 10) {
-		twiml2.say("Goodbye", {voice: 'alice'});
+	var storySnippet = request.body.SpeechResult;
+	console.log("Story snippet: " + storySnippet);
+	processedSnippets.push(storySnippet);
+	snippetQueue.push(storySnippet);
+	if (processedSnippets.length > 100 || storySnippet.toLowerCase().includes("the end")) {
+		storyTitle = "";
+		processedSnippets = [];
+		snippetQueue = [];
+		twiml2.say("Goodbye!", {voice: 'alice'});
 		twiml2.hangup();
 		response.send(twiml2.toString());
 	}
@@ -125,7 +127,6 @@ app.post('/continueListening', (request, response) => {
 			action: '/continueListening'
 		});
 
-	response.type('text/xml');
 	response.send(twiml2.toString());
  }); 
 
