@@ -141,4 +141,4 @@ function addText() {
     	})
 }
 
-setInterval(addText, 1000);
+setInterval(addText, 2000);
