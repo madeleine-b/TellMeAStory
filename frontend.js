@@ -121,13 +121,12 @@ function addText() {
 	$.ajax({
 		'url' : 'http://c0cce248.ngrok.io/nextSnippet',
     	'type' : 'GET'}).then(result => {
-    		if (data.title == '' && result.title != '') {
-    			data.title = result.title;
-    			$('#title-cover').html(Mustache.render(titleTemplate, data));
+    		if (!startedStory && result.title != '') {
+    			tellTitle(result.title);
     		}
-    		addTextToPage(result.text);
+    		tellStory(result.text);
     		console.log("get succesful");
-    		console.log(data);
+    		console.log(result.text);
     	})
 }
 
