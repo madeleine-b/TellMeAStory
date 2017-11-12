@@ -15,7 +15,7 @@ var endTemplate = $("#end-template").html();
 
 // Calculate booklet size.
 var w = $(window).width();
-var h = $(window).height()/4;
+var h = $(window).height()/3;
 console.log("window width: " + w);
 console.log("window height: " + h);
 
@@ -124,10 +124,12 @@ function addText() {
     		if (!startedStory && result.title != '') {
     			tellTitle(result.title);
     		}
-    		tellStory(result.text);
+    		if (result.text != '') {
+    			tellStory(result.text);
+    		}
     		console.log("get succesful");
     		console.log(result.text);
     	})
 }
 
-setInterval(addText, 3000);
+setInterval(addText, 1000);
