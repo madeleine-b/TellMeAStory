@@ -1,0 +1,41 @@
+body {
+	background-image: url("images/dark_wood.png");
+}
+
+.booklet .b-page-cover {
+	background-image: url("images/book_cover.png");
+	background-size: 100%;
+}
+
+.booklet .b-page .b-wrap-left {
+	background-image: url("images/blank_page.jpg");
+	background-size: 100%;
+}
+
+.booklet .b-page .b-wrap-right {
+	background-image: url("images/blank_page.jpg");
+	background-size: 100%;
+}
+
+#title-cover, #end-cover {
+	text-align: center;
+	vertical-align: middle;
+	color: #d2aa5a;
+	font-family: "IM Fell English", Georgia, sans-serif;
+	height: 100%;
+	/*line-height: 90px; */
+}
+
+.text-page {
+	font-family: "Garamond", Georgia, Serif;
+	font-size: 200%;
+	color: #663300;
+	height: 100%;
+}
+
+.image-page {
+	display: table-cell; 
+	vertical-align: middle; 
+	text-align: center
+	height: 100%;
+}
